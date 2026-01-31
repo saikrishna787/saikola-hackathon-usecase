@@ -1,0 +1,10 @@
+name: Application Service Build
+on:
+  workflow_dispatch:
+jobs:
+  build-nodejs:
+    uses: https://github.com/saikrishna787/saikola-hackathon-usecase/.github/.github/workflows/nodejs-build.yaml@main
+    with:
+      application_name: 'application-service'
+    secrets:
+      GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}

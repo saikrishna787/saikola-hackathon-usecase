@@ -2,3 +2,14 @@
 .class*
 .jar
 .ear
+
+**/node_modules/**
+**/target/**
+/.idea/.gitignore
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.ask.xml
+/.idea/copilot.data.migration.edit.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/saikola-hackathon-usecase.iml
+/.idea/vcs.xml

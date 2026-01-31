@@ -1,0 +1,62 @@
+name: Build and Push Node Application Image to GCR
+on:
+  workflow_dispatch:
+    inputs:
+      application_name:
+        description: 'Name of the application to build'
+        required: true
+        default: ''
+    GCP_Project:
+      description: 'GCP Project ID'
+      required: false
+      default: 'project-4b8711e6-1e25-4675-ae6'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    secrets: inherit
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Setup Docker Build
+        uses: docker/setup-buildx-action@v2
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ inputs.GCP_PROJECT }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Initialize npm
+        run: npm init -y
+
+      - name: Install dependencies
+        run: npm install express
+
+      - name: Run tests
+        run: npm test
+
+      - name: Configure Docker to use gcloud credentials for GCR
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build and Push Docker Image to GCR
+        run: |
+          cd "$APP_DIR"
+          APP_NAME="${{ inputs.application_name }}"
+          if [ -z "$APP_NAME" ] || [ "$APP_NAME" = "." ]; then
+            APP_NAME=$(basename "$PWD")
+          fi
+          IMAGE="gcr.io/${{ inputs.GCP_PROJECT }}/$APP_NAME:latest"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "Docker image pushed to $IMAGE"

@@ -1,0 +1,68 @@
+name: Terraform Validate and Deploy to GCP
+on:
+  workflow_dispatch:
+    inputs:
+      Resource:
+        description: 'Resource to deploy'
+        required: true
+        type: choice
+        options:
+          - 'gke-cluster'
+          - 'load-balancer'
+          - 'cloud-storage'
+          - 'vpc'
+          - 'artifact-registry'
+      Operation:
+        description: 'Operation to perform'
+        type: choice
+        options:
+          - 'plan'
+          - 'deploy'
+          - 'destroy'
+        required: true
+        default: 'plan'
+
+jobs:
+  terraform-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.6
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Initialize Terraform
+        working-directory: ./terraform/${{ inputs.Resource }}
+        run: terraform init
+
+      - name: Validate Terraform configuration
+        working-directory: ./terraform/${{ inputs.Resource }}
+        run: terraform validate
+
+      - name: Plan Terraform deployment
+        if:
+        working-directory: ./terraform/${{ inputs.Resource }}
+        run: terraform plan -var="environment=${{ inputs.environment }}"
+
+      - name: Apply Terraform configuration
+        working-directory: ./terraform/${{ inputs.Resource }}
+        run: terraform apply -auto-approve -var="environment=${{ inputs.environment }}"
+
+      - name: Destroy Terraform-managed infrastructure
+        if: ${{ inputs.Operation == 'destroy' }}
+        working-directory: ./terraform/${{ inputs.Resource }}
+        run: terraform destroy -auto-approve -var="environment=${{ inputs.environment }}"

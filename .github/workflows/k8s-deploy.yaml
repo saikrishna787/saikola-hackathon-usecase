@@ -1,0 +1,76 @@
+name: GKE Application Verify and Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      GKE_CLUSTER:
+        description: 'GKE Cluster Name'
+        required: true
+        default: ''
+      GKE_ZONE:
+        description: 'GKE Cluster Zone'
+        required: true
+        default: 'asia-south1-a'
+      GKE_NAMESPACE:
+        description: 'Kubernetes Namespace (leave empty for default)'
+        required: false
+        default: 'hackathon_ns'
+      application_name:
+        description: 'Name of the application to deploy (leave empty to target all)'
+        required: false
+        default: ''
+      Operation:
+        description: 'Operation to perform'
+        type: choice
+        options:
+          - 'deploy'
+          - 'verify'
+        required: true
+        default: 'verify'
+
+jobs:
+  gke-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Get GKE credentials
+        env:
+          GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
+          GKE_ZONE: ${{ inputs.GKE_ZONE }}
+          GCP_PROJECT: "project-4b8711e6-1e25-4675-ae6"
+        run: |
+          set -euo pipefail
+          if [ -z "${GKE_CLUSTER:-}" ] || [ -z "${GKE_ZONE:-}" ]; then
+            echo "Missing GKE_CLUSTER or GKE_ZONE secrets"
+            exit 1
+          fi
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE" --project "$GCP_PROJECT"
+
+      - name: Verify kubectl installation
+        run: kubectl version --client
+
+      - name: Verify apps on GKE
+        env:
+          APP_NAME: ${{ inputs.application_name }}
+          NAMESPACE: ${{ inputs.GKE_NAMESPACE }}
+        run: |
+          kubectl apply -f ${NAMESPACE} -f ${APP_NAME}/kubernetes-manifests/deployment.yaml --dry-run=client -o yaml
+          kubectl apply -f ${NAMESPACE} -f ${APP_NAME}/kubernetes-manifests/service.yaml --dry-run=client -o yaml
+          kubectl aply -f ${NAMESPACE} -f ${APP_NAME}/kubernetes-manifests/ingress.yaml --dry-run=client -o yaml
+
+      - name: Deploy Application to GKE
+        if: ${{ inputs.Operation == 'deploy' }}
+        env:
+          APP_NAME: ${{ inputs.application_name }}
+          NAMESPACE: ${{ inputs.GKE_NAMESPACE }}
+        run: |
+          kubectl apply -n ${NAMESPACE} -f ${APP_NAME}/kubernetes-manifests/deployment.yaml
+          kubectl apply -n ${NAMESPACE} -f ${APP_NAME}/kubernetes-manifests/service.yaml
+          kubectl apply -n ${NAMESPACE} -f ${APP_NAME}/kubernetes-manifests/ingress.yaml
