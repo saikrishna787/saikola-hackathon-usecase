@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   build-nodejs:
-    uses: ./github/workflows/nodejs-build.yaml
+    uses: ./.github/workflows/nodejs-build.yaml
     with:
       application_name: 'application-service'
     secrets:
