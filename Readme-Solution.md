@@ -13,11 +13,11 @@
 
 -> Create GCR / GAR Repository in GCP and assign permissions to sa to pull and push the gar
 -> kubernetes manifests 
--> Workflow to validate, build and deploy terraform
+-> Workflow to validate, build and deploy terraform - vpc, gke, bucket,service account, iam perms
 -> Workflow to validate, build and deploy application, build docker file and push to gcr/gar
--> Workflow to validate, build and deploy kube manifests\
+-> Workflow to validate, build and deploy kube manifests
 
 
 -> Create monitoring and alert
 
-![](C:\Users\saikr\Downloads\Hackaton.png)
+<img width="4546" height="1527" alt="Hackaton" src="https://github.com/user-attachments/assets/523b3d50-f8b7-44da-bb4a-bb0003855871" />
