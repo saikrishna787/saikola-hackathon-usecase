@@ -1,11 +1,12 @@
 name: Build and Push Node Application Image to GCR
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       application_name:
         description: 'Name of the application to build'
         required: true
         default: ''
+        type: string
     GCP_Project:
       description: 'GCP Project ID'
       required: false
