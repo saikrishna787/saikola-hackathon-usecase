@@ -12,6 +12,9 @@ on:
         required: false
         default: 'project-4b8711e6-1e25-4675-ae6'
         type: string
+    secrets:
+      GCP_CREDENTIALS:
+        required: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -52,8 +55,8 @@ jobs:
 
       - name: Build and Push Docker Image to GCR
         run: |
-          cd "$APP_DIR"
           APP_NAME="${{ inputs.application_name }}"
+          cd "$APP_NAME"
           if [ -z "$APP_NAME" ] || [ "$APP_NAME" = "." ]; then
             APP_NAME=$(basename "$PWD")
           fi
