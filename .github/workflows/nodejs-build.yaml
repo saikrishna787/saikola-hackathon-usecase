@@ -7,10 +7,11 @@ on:
         required: true
         default: ''
         type: string
-    GCP_Project:
-      description: 'GCP Project ID'
-      required: false
-      default: 'project-4b8711e6-1e25-4675-ae6'
+      GCP_Project:
+        description: 'GCP Project ID'
+        required: false
+        default: 'project-4b8711e6-1e25-4675-ae6'
+        type: string
 jobs:
   build:
     runs-on: ubuntu-latest
