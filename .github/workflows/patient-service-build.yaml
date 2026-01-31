@@ -5,6 +5,6 @@ jobs:
   build-nodejs:
     uses: ./.github/workflows/nodejs-build.yaml
     with:
-      application_name: 'application-service'
+      application_name: 'patient-service'
     secrets:
       GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
