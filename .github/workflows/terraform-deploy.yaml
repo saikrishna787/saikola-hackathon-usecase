@@ -17,7 +17,7 @@ on:
         type: choice
         options:
           - 'plan'
-          - 'deploy'
+          - 'apply'
           - 'destroy'
         required: true
         default: 'plan'
@@ -54,15 +54,15 @@ jobs:
         run: terraform validate
 
       - name: Plan Terraform deployment
-        if:
         working-directory: ./terraform/${{ inputs.Resource }}
-        run: terraform plan -var="environment=${{ inputs.environment }}"
+        run: terraform plan
 
       - name: Apply Terraform configuration
+        if: ${{ inputs.Operation == 'apply' }}
         working-directory: ./terraform/${{ inputs.Resource }}
-        run: terraform apply -auto-approve -var="environment=${{ inputs.environment }}"
+        run: terraform apply -auto-approve
 
       - name: Destroy Terraform-managed infrastructure
         if: ${{ inputs.Operation == 'destroy' }}
         working-directory: ./terraform/${{ inputs.Resource }}
-        run: terraform destroy -auto-approve -var="environment=${{ inputs.environment }}"
+        run: terraform destroy -auto-approve
