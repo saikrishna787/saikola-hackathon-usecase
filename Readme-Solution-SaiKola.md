@@ -20,3 +20,10 @@
 -> Create monitoring and alert
 
 <img width="4546" height="1527" alt="Hackaton" src="https://github.com/user-attachments/assets/523b3d50-f8b7-44da-bb4a-bb0003855871" />
+
+
+Implementation:
+Service account created
+Terraform state bucket created
+VPC Deployed using terraform and github actions
+Application code has been containerized and pushed to GAR
