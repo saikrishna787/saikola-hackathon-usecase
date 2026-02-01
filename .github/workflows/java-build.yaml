@@ -35,6 +35,14 @@ jobs:
           project_id: ${{ inputs.GCP_PROJECT }}
           service_account_key: ${{ secrets.GCP_CREDENTIALS }}
 
+      - name: Set Application Directory
+        run: |
+          echo "APP_DIR=${{ inputs.application_name }}" >> $GITHUB_ENV
+          cd $APP_DIR
+
+      - name: Install Maven dependencies
+        run: mvn clean package
+
       - name: Initialize Maven
         run: mvn spring-boot:run
 
