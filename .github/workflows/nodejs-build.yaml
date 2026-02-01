@@ -42,16 +42,20 @@ jobs:
           service_account_key: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Initialize npm
+        working-directory: ${{ inputs.application_name }}
         run: npm init -y
 
       - name: Install dependencies
+        working-directory: ${{ inputs.application_name }}
         run: npm install express
 
 #      - name: Run tests
 #        run: npm test || true
 
       - name: Configure Docker to use gcloud credentials for GCR
-        run: gcloud auth configure-docker --quiet
+        run: |
+          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker asia-south1-docker.pkg.dev
 
       - name: Build and Push Docker Image to GCR
         run: |

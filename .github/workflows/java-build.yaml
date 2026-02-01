@@ -6,6 +6,12 @@ on:
         description: 'Name of the application to build'
         required: true
         default: 'order-service'
+        type: string
+      GCP_Project:
+        description: 'GCP Project ID'
+        required: false
+        default: 'project-4b8711e6-1e25-4675-ae6'
+        type: string
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,10 +45,6 @@ jobs:
         run: |
           echo "APP_DIR=${{ inputs.application_name }}" >> $GITHUB_ENV
           cd $APP_DIR
-
-      - name: Install Maven dependencies
-        working-directory: ${{ inputs.application_name }}
-        run: mvn clean package
 
       - name: Install Maven dependencies
         working-directory: ${{ inputs.application_name }}
