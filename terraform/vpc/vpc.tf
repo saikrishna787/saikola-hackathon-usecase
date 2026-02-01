@@ -6,14 +6,14 @@ resource "google_compute_network" "vpc" {
 resource "google_compute_subnetwork" "public_subnet" {
   name          = "public-subnet-south"
   ip_cidr_range = "10.0.1.0/24"
-  region        = "asia-south2"
+  region        = "asia-south1"
   network       = google_compute_network.vpc.id
 }
 
 resource "google_compute_subnetwork" "private_subnet" {
   name          = "private-subnet-south"
   ip_cidr_range = "10.0.2.0/24"
-  region        = "asia-south2"
+  region        = "asia-south1"
   network       = google_compute_network.vpc.id
   secondary_ip_range {
     range_name    = "pod-ranges"
