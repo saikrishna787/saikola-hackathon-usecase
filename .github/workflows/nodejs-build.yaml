@@ -63,7 +63,7 @@ jobs:
           if [ -z "$APP_NAME" ] || [ "$APP_NAME" = "." ]; then
             APP_NAME=$(basename "$PWD")
           fi
-          IMAGE="asia-south1-docker.pkg.dev/${{ inputs.GCP_PROJECT }}/hackathon-repo/$APP_NAME:latest:latest"
+          IMAGE="asia-south1-docker.pkg.dev/${{ inputs.GCP_PROJECT }}/hackathon-repo/$APP_NAME:latest"
           docker build -t "$IMAGE" .
           docker push "$IMAGE"
           echo "Docker image pushed to $IMAGE"
