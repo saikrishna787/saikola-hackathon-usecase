@@ -41,12 +41,15 @@ jobs:
           cd $APP_DIR
 
       - name: Install Maven dependencies
+        working-directory: ${{ inputs.application_name }}
         run: mvn clean package
 
       - name: Initialize Maven
+        working-directory: ${{ inputs.application_name }}
         run: mvn spring-boot:run
 
       - name: Install Maven dependencies
+        working-directory: ${{ inputs.application_name }}
         run: mvn clean package
 
       - name: Configure Docker to use gcloud credentials for GCR
